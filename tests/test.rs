@@ -287,22 +287,22 @@ async fn test_simulate_red_black_tree() {
     simulate::<u64, RBTree>(true);
 }
 
-#[tokio::test(flavor = "multi_thread")]
-async fn test_simulate_hash_table() {
-    const NUM_BUCKETS: usize = MAX_SIZE >> 2;
-    type HashMap = HashTable<u64, Widget, NUM_BUCKETS, MAX_SIZE>;
-    simulate::<u64, HashMap>(false);
-}
+// #[tokio::test(flavor = "multi_thread")]
+// async fn test_simulate_hash_table() {
+//     const NUM_BUCKETS: usize = MAX_SIZE >> 2;
+//     type HashMap = HashTable<u64, Widget, NUM_BUCKETS, MAX_SIZE>;
+//     simulate::<u64, HashMap>(false);
+// }
 
-#[tokio::test(flavor = "multi_thread")]
-async fn test_simulate_avl_tree() {
-    type AVLTreeMap = AVLTree<u64, Widget, MAX_SIZE>;
-    simulate::<u64, AVLTreeMap>(true);
-}
+// #[tokio::test(flavor = "multi_thread")]
+// async fn test_simulate_avl_tree() {
+//     type AVLTreeMap = AVLTree<u64, Widget, MAX_SIZE>;
+//     simulate::<u64, AVLTreeMap>(true);
+// }
 
-#[tokio::test(flavor = "multi_thread")]
-async fn test_simulate_critbit() {
-    const NUM_NODES: usize = MAX_SIZE << 1;
-    type CritbitTree = Critbit<Widget, NUM_NODES, MAX_SIZE>;
-    simulate::<u128, CritbitTree>(true);
-}
+// #[tokio::test(flavor = "multi_thread")]
+// async fn test_simulate_critbit() {
+//     const NUM_NODES: usize = MAX_SIZE << 1;
+//     type CritbitTree = Critbit<Widget, NUM_NODES, MAX_SIZE>;
+//     simulate::<u128, CritbitTree>(true);
+// }

@@ -1,6 +1,6 @@
 use bytemuck::{Pod, Zeroable};
+use core::mem::{align_of, size_of};
 use num_derive::FromPrimitive;
-use std::mem::{align_of, size_of};
 
 /// Enum representing the fields of a tree node:
 /// 0 - left pointer
@@ -44,8 +44,14 @@ pub trait NodeAllocatorMap<K, V> {
         self.len() == 0
     }
     fn capacity(&self) -> usize;
-    fn iter(&self) -> Box<dyn DoubleEndedIterator<Item = (&K, &V)> + '_>;
-    fn iter_mut(&mut self) -> Box<dyn DoubleEndedIterator<Item = (&K, &mut V)> + '_>;
+    fn iter<'a>(&'a self) -> impl DoubleEndedIterator<Item = (&'a K, &'a V)>
+    where
+        K: 'a,
+        V: 'a;
+    fn iter_mut<'a>(&'a mut self) -> impl DoubleEndedIterator<Item = (&'a K, &'a mut V)>
+    where
+        K: 'a,
+        V: 'a;
 }
 
 /// This trait adds additional functions for sorted map data structures that use the NodeAllocator
@@ -58,12 +64,12 @@ pub trait OrderedNodeAllocatorMap<K, V>: NodeAllocatorMap<K, V> {
 
 pub trait ZeroCopy: Pod {
     fn load_mut_bytes(data: &'_ mut [u8]) -> Option<&'_ mut Self> {
-        let size = std::mem::size_of::<Self>();
+        let size = core::mem::size_of::<Self>();
         bytemuck::try_from_bytes_mut(&mut data[..size]).ok()
     }
 
     fn load_bytes(data: &'_ [u8]) -> Option<&'_ Self> {
-        let size = std::mem::size_of::<Self>();
+        let size = core::mem::size_of::<Self>();
         bytemuck::try_from_bytes(&data[..size]).ok()
     }
 }
@@ -207,8 +213,8 @@ impl<
     #[inline(always)]
     fn assert_proper_alignemnt(&self) {
         let reg_size = size_of::<u32>() * NUM_REGISTERS;
-        let self_ptr = std::slice::from_ref(self).as_ptr() as usize;
-        let node_ptr = std::slice::from_ref(&self.nodes).as_ptr() as usize;
+        let self_ptr = core::slice::from_ref(self).as_ptr() as usize;
+        let node_ptr = core::slice::from_ref(&self.nodes).as_ptr() as usize;
         let self_align = align_of::<Self>();
         let t_index = node_ptr + reg_size;
         let t_align = align_of::<T>();
